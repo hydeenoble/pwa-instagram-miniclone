@@ -65,7 +65,7 @@ function isInArray(string, array){
 }
 
 self.addEventListener('fetch', function(event){
-	var url = 'https://httpbin.org/get';
+	var url = 'hhttps://pwagram-e0ce6.firebaseio.com/posts';
 
 	if(event.request.url.indexOf(url) > -1){
 		event.respondWith(
