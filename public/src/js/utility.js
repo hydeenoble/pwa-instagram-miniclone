@@ -25,7 +25,7 @@ function readAllData(st){
 
 function clearAllData(st) {
     return dbPromise
-    .then(function(data){
+    .then(function(db){
         var tx = db.transaction(st, 'readwrite');
         var store = tx.objectStore(st);
         store.clear();
@@ -35,7 +35,7 @@ function clearAllData(st) {
 
 function deleteSingleItem(st, id) {
     dbPromise
-    .then(function(data){
+    .then(function(db){
         var tx = db.transaction(st, 'readwrite');
         var store = tx.objectStore(st);
         store.delete(id);
