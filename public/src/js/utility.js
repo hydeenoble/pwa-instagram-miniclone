@@ -32,3 +32,15 @@ function clearAllData(st) {
         return tx.complete;
     });
 }
+
+function deleteSingleItem(st, id) {
+    dbPromise
+    .then(function(data){
+        var tx = db.transaction(st, 'readwrite');
+        var store = tx.objectStore(st);
+        store.delete(id);
+        return tx.complete;
+    }).then(function(){
+        console.log('item deleted');
+    });
+}

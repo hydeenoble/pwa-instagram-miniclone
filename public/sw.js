@@ -80,7 +80,7 @@ self.addEventListener('fetch', function(event){
 				clearAllData('posts')
 				.then(function(){
 					return clonedRes.json()
-				})
+				}) 
 				.then(function(data){
 					for (var key in data) {
 						writeData('posts', data[key]);
