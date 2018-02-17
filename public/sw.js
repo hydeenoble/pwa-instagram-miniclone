@@ -22,7 +22,7 @@ self.addEventListener('install', function(event){
 	event.waitUntil(
 		caches.open(CACHE_STATIC_NAME).then(function(cache){
 			console.log('[Service Worker] Precaching App shell');
-			cache.addAll([STATIC_FILES]);
+			cache.addAll(STATIC_FILES);
 		})
 	);
 })
@@ -123,7 +123,7 @@ self.addEventListener('fetch', function(event){
 					}).catch(function(err){
 						return caches.open(CACHE_STATIC_NAME)
 						.then(function(cache){
-							if(event.request.url.indexOf('/help')){
+							if(event.request.headers.get('accept').includes('text/html')){
 								return cache.match('/offline.html');
 							}
 						});
