@@ -31,6 +31,10 @@ function displayConfrimNotification(){
             badge: '/src/images/icons/app-icon-96x96.png',
             tag: 'confirm-notification',
             renotify: true,
+            actions: [
+                { action: 'confirm', title: 'Okay', icon: '/src/images/icons/app-icon-96x96.png' },
+                { action: 'cancel', title: 'Okay', Cancel: '/src/images/icons/app-icon-96x96.png' }
+            ]
         };
 
         navigator.serviceWorker.ready
