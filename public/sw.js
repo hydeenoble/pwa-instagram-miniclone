@@ -173,3 +173,7 @@ self.addEventListener('notificationclick', function(event){
 		notification.close();
 	}
 });
+
+self.addEventListener('notificationclosed', function(event){
+	console.log('Notification was closed', event);
+});
