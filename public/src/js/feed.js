@@ -12,6 +12,46 @@ var imagePicker = document.querySelector('#image-picker');
 var imagePickerArea = document.querySelector('#pick-image');
 var picture;
 
+var locationBtn = document.querySelector('#location-btn');
+var locationLoader = document.querySelector('#location-loader');
+var fetchedLocation;
+
+locationBtn.addEventListener('click', function(event){
+  if (!('geolocation' in navigator)){
+    return;
+  }
+
+  locationBtn.style.display = 'none';
+  locationLoader.style.display = 'block';
+
+  navigator.geolocation.getCurrentPosition(function(position){
+    locationBtn.style.display = 'inline';
+    locationLoader.style.display = 'none';
+    fetchedLocation = {
+      lat: position.coords.latitude,
+      lng: position.coords.longitude
+    };
+    locationInput.value = "In Ife";
+    document.querySelector('#manual-location').classList.add('is-focused');
+    console.log(position);
+
+  }, function(err){
+    console.log(err);
+    locationBtn.style.display = 'inline';
+    locationLoader.style.display = 'none';
+    alert('Couldn\'t fetch location, please enter manually');
+    fetchedLocation = {
+      lat: null,
+      lng: null
+    };;
+  }, {timeout: 7000});
+});
+
+function initializeLocation(){
+  if (!('geolocation' in navigator)){
+    locationBtn.style.display = 'none';
+  }
+}
 
 function initializeMedia() {
   if(!('mediaDevices' in navigator)){
@@ -41,6 +81,7 @@ function initializeMedia() {
     imagePickerArea.style.display = 'block';
   });
 }
+
 
 
 captureButton.addEventListener('click', function(event){
@@ -76,6 +117,7 @@ function openCreatePostModal() {
   }, 1);
 
   initializeMedia();
+  initializeLocation();
   
   if (deferredPrompt){
     deferredPrompt.prompt();
@@ -104,6 +146,8 @@ function closeCreatePostModal() {
   imagePickerArea.style.display = 'none';
   videoPlayer.style.display = 'none';
   canvasElement.style.display = 'none';
+  locationBtn.style.display = 'inline';
+  locationLoader.style.display = 'none';
 }
 
 shareImageButton.addEventListener('click', openCreatePostModal);
@@ -180,6 +224,8 @@ function sendData(){
   postData.append('title', titleInput.value);
   postData.append('location', locationInput.value);
   postData.append('file', picture, id + '.png');
+  postData.append('rawLocationLat', fetchedLocation.lat);
+  postData.append('rawLocationLng', fetchedLocation.lng);
           
   fetch('https://us-central1-pwagram-e0ce6.cloudfunctions.net/storePostData', {
     method: 'POST',
@@ -207,7 +253,8 @@ form,addEventListener('submit', function(event){
         id: new Date().toISOString(),
         title: titleInput.value,
         location: locationInput.value,
-        picture: picture
+        picture: picture,
+        rawLocation: fetchedLocation
       }
       writeData('sync-posts', post)
       .then(function(){
