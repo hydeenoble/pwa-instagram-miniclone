@@ -14,13 +14,18 @@ var picture;
 
 var locationBtn = document.querySelector('#location-btn');
 var locationLoader = document.querySelector('#location-loader');
-var fetchedLocation;
+var fetchedLocation = {
+  lat: 0,
+  lng: 0
+};
 
 locationBtn.addEventListener('click', function(event){
   if (!('geolocation' in navigator)){
     return;
   }
 
+  var sawAlert = false;
+  
   locationBtn.style.display = 'none';
   locationLoader.style.display = 'block';
 
@@ -39,10 +44,14 @@ locationBtn.addEventListener('click', function(event){
     console.log(err);
     locationBtn.style.display = 'inline';
     locationLoader.style.display = 'none';
-    alert('Couldn\'t fetch location, please enter manually');
+    if(!sawAlert){
+      alert('Couldn\'t fetch location, please enter manually');
+      sawAlert = true;
+    }
+    
     fetchedLocation = {
-      lat: null,
-      lng: null
+      lat: 0,
+      lng: 0
     };;
   }, {timeout: 7000});
 });
@@ -137,17 +146,23 @@ function openCreatePostModal() {
 }
 
 function closeCreatePostModal() {
-  createPostArea.style.transform = 'translateY(100vh)';
-
-  setTimeout(() => {
-    createPostArea.style.display = 'none';
-  }, 1);
-
+  createPostArea.style.display = 'none';
   imagePickerArea.style.display = 'none';
   videoPlayer.style.display = 'none';
   canvasElement.style.display = 'none';
   locationBtn.style.display = 'inline';
   locationLoader.style.display = 'none';
+  captureButton.style.display = 'inline';
+
+  if(videoPlayer.srcObject){
+    videoPlayer.srcObject.getVideoTracks().forEach(function(track){
+      track.stop();
+    });
+  }
+  
+ setTimeout(() => {
+    createPostArea.style.transform = 'translateY(100vh)';
+  }, 1);
 }
 
 shareImageButton.addEventListener('click', openCreatePostModal);
