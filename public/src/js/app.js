@@ -39,7 +39,7 @@ function displayConfirmNotification(){
 
         navigator.serviceWorker.ready
         .then(function(swreg) {
-            swreg.showNotification('Successfully subscribed (From SW)!', options);
+            swreg.showNotification('Successfully subscribed!', options);
         });
     }
 }
@@ -56,13 +56,32 @@ function configurePushSub(){
         return swreg.pushManager.getSubscription();
     }).then(function(sub){
         if(sub === null){
-            reg.pushManager.subscribe({
-                userVisible: true,
-                
+            var vapidPublicKey = 'BI5YZulve60bzJ58w3KkRwxuChlFV_HjPaYeUftq6QKda0sWuNXlk7YhCkeoNjBQza3OCHRlMw6WEqOXYd5PFek';
+            var convertedVapidPublicKey = urlBase64ToUint8Array(vapidPublicKey);
+
+            return reg.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: convertedVapidPublicKey
             });
         }else{
 
         }
+    }).then(function(newSub){
+        return fetch('https://pwagram-e0ce6.firebaseio.com/subcriptions.json', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(newSub)
+        });
+    }).then(function(res){
+        if(res.ok){
+            displayConfirmNotification();
+        }
+    }).catch(function(err){
+        console.log(err);
+        
     });
 }
 
