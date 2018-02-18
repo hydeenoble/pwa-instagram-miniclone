@@ -49,12 +49,17 @@ function configurePushSub(){
         return;
     }
 
+    var reg;
     navigator.serviceWorker.ready
     .then(function(swreg){
+        reg = swreg;
         return swreg.pushManager.getSubscription();
     }).then(function(sub){
         if(sub === null){
- 
+            reg.pushManager.subscribe({
+                userVisible: true,
+                
+            });
         }else{
 
         }
