@@ -115,7 +115,6 @@ function sendData(){
       id: new Date().toISOString(),
       title: titleInput,
       location: locationInput,
-      image: "https://firebasestorage.googleapis.com/v0/b/pwagram-e0ce6.appspot.com/o/sf-boat.jpg?alt=media&token=e83ef799-e221-4479-9bb6-7750931e699c",
     })
   }).then(function(res){
     console.log('Sent data', res);
@@ -137,13 +136,15 @@ form,addEventListener('submit', function(event){
     navigator.serviceWorker.ready
     .then(function(sw){
       var post = {
-        id: new Date().toISOString,
+        id: new Date().toISOString(),
         title: titleInput.value,
-        location: locationInput.value
+        location: locationInput.value,
+        image: "https://firebasestorage.googleapis.com/v0/b/pwagram-e0ce6.appspot.com/o/sf-boat.jpg?alt=media&token=e83ef799-e221-4479-9bb6-7750931e699c",
+
       }
       writeData('sync-posts', post)
       .then(function(){
-        return sw.sync.register('sync-new-post');
+        return sw.sync.register('sync-new-posts');
       }).then(function() {
         var snackbarContainer = document.querySelector('#confirmation-toast');
         var data = { message: 'Your Post was saved for syncing'};

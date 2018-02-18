@@ -121,3 +121,37 @@ self.addEventListener('fetch', function(event){
 	}
 	
 });
+
+self.addEventListener('sync', function(event){
+	console.log('[Service Worker] Background syncing', event);
+	if(event.tag === 'sync-new-posts') {
+		console.log('[Service Worker] Syncing new Posts');
+		event.waitUntil(
+			readAllData('sync-posts')
+			.then(function(data){
+				for (var dt of data){
+					fetch('https://pwagram-e0ce6.firebaseio.com/posts.json', {
+					method: 'POST',
+					headers: {
+					  'Content-Type': 'application/json',
+					  'Accept': 'application/json'
+					},
+					body: JSON.stringify({
+					  id: dt.id,
+					  title: dt.title,
+					  location: dt.location,
+					  image: 'https://firebasestorage.googleapis.com/v0/b/pwagram-e0ce6.appspot.com/o/sf-boat.jpg?alt=media&token=e83ef799-e221-4479-9bb6-7750931e699c',
+					})
+				  }).then(function(res){
+					console.log('Sent data', res);
+					if (res.ok){
+						deleteSingleItem('sync-posts', dt.id);
+					}
+				  }).catch(function(err){
+					  console.log('Error while sending data', err);
+				  });
+				}
+			})
+		);
+	}
+});
