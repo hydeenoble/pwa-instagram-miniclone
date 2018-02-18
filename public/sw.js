@@ -178,10 +178,10 @@ self.addEventListener('notificationclick', function(event){
 				});
 
 				if(client !== undefined){
-					client.navigate('http://localhost:8080');
+					client.navigate(notification.data.url);
 					client.focus();
 				} else {
-					clients.openWindow('http://localhost:8080');
+					clients.openWindow(notification.data.url);
 				}
 			})
 		);
@@ -198,7 +198,8 @@ self.addEventListener('push', function(event) {
 
 	var data = {
 		title: 'New!',
-		content: 'Something default happened'
+		content: 'Something default happened',
+		openUrl: '/'
 	};
 
 	if(event.data){
@@ -209,6 +210,9 @@ self.addEventListener('push', function(event) {
 		body: data.content,
 		icon: '/src/images/icons/app-icon-96x96.png',
 		badge: '/src/images/icons/app-icon-96x96.png',
+		data: {
+			url: data.openUrl
+		}
 	};
 
 	event.waitUntil(
