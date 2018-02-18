@@ -28,8 +28,17 @@ function initializeMedia() {
       return new Promise(function(resolve, reject){
         getUserMedia.call(navigator, constraints, resolve, reject);
       });
-    }
+    };
   }
+
+  navigator.mediaDevices.getUserMedia({video: true})
+  .then(function(stream){
+    videoPlayer.srcObject = stream;
+    videoPlayer.style.display = 'block';
+  })
+  .catch(function(err){
+    imagePickerArea.style.display = 'block';
+  });
 }
 
 function openCreatePostModal() {
@@ -38,6 +47,8 @@ function openCreatePostModal() {
   setTimeout(() => {
     createPostArea.style.transform = 'translateY(0)';
   }, 1);
+
+  initializeMedia();
   
   if (deferredPrompt){
     deferredPrompt.prompt();
@@ -62,6 +73,10 @@ function closeCreatePostModal() {
   setTimeout(() => {
     createPostArea.style.display = 'none';
   }, 1);
+
+  imagePickerArea.style.display = 'none';
+  videoPlayer.style.display = 'none';
+  canvasElement.style.display = 'none';
 }
 
 shareImageButton.addEventListener('click', openCreatePostModal);
