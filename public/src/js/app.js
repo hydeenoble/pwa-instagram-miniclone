@@ -67,7 +67,7 @@ function configurePushSub(){
 
         }
     }).then(function(newSub){
-        return fetch('https://pwagram-e0ce6.firebaseio.com/subcriptions.json', {
+        return fetch('https://pwagram-e0ce6.firebaseio.com/subscriptions.json', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
