@@ -10,6 +10,7 @@ var canvasElement = document.querySelector('#canvas');
 var captureButton = document.querySelector('#capture-btn');
 var imagePicker = document.querySelector('#image-picker');
 var imagePickerArea = document.querySelector('#pick-image');
+var picture;
 
 
 function initializeMedia() {
@@ -60,6 +61,7 @@ captureButton.addEventListener('click', function(event){
     track.stop();
   });
 
+  picture = dataURItoBlob(canvasElement.toDataURL());
 });
 
 function openCreatePostModal() {
@@ -167,17 +169,17 @@ if ('indexedDB' in window){
   });
 }
 function sendData(){
+
+  var id = new Date().toISOString();
+  var postData = new FormData();
+  postData.append('id', id);
+  postData.append('title', titleInput.value);
+  postData.append('location', locationInput.value);
+  postData.append('file', picture, id + '.png');
+          
   fetch('https://us-central1-pwagram-e0ce6.cloudfunctions.net/storePostData', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    },
-    body: JSON.stringify({
-      id: new Date().toISOString(),
-      title: titleInput,
-      location: locationInput,
-    })
+    body: postData
   }).then(function(res){
     console.log('Sent data', res);
     updateUI();
@@ -201,8 +203,7 @@ form,addEventListener('submit', function(event){
         id: new Date().toISOString(),
         title: titleInput.value,
         location: locationInput.value,
-        image: "https://firebasestorage.googleapis.com/v0/b/pwagram-e0ce6.appspot.com/o/sf-boat.jpg?alt=media&token=e83ef799-e221-4479-9bb6-7750931e699c",
-
+        picture: picture
       }
       writeData('sync-posts', post)
       .then(function(){
