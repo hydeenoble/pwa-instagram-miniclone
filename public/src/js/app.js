@@ -22,12 +22,18 @@ window.addEventListener('beforeinstallprompt', function(event){
 function displayConfrimNotification(){
     if ('serviceWorker' in navigator) {
         var options = {
-            body: 'You have successfully subscribed to our Notification service!'
+            body: 'You have successfully subscribed to our Notification service!',
+            icon: '/src/images/icons/app-icon-96x96.png',
+            image: '/src/images/sf-boat.jpg',
+            dir: 'ltr',
+            lang: 'en-US',
+            vibrate: [100, 50, 200],
+            badge: '/src/images/icons/app-icon-96x96.png',
         };
 
         navigator.serviceWorker.ready
         .then(function(swreg) {
-            swreg.showNotification('Successfully subscribed (From SW)!', options)
+            swreg.showNotification('Successfully subscribed (From SW)!', options);
         });
     }
 }
@@ -46,6 +52,6 @@ function askForNotificationPermission(){
 if('Notification' in window){
     for (var i = 0; i < enableNotificationButtons.length; i++){
         enableNotificationButtons[i].style.display = 'inline-block';
-        enableNotificationButtons[i],addEventListener('click', askForNotificationPermission);
+        enableNotificationButtons[i].addEventListener('click', askForNotificationPermission);
     }
 }
