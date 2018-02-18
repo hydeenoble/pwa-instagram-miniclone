@@ -19,7 +19,7 @@ window.addEventListener('beforeinstallprompt', function(event){
     return false;
 });
 
-function displayConfrimNotification(){
+function displayConfirmNotification(){
     if ('serviceWorker' in navigator) {
         var options = {
             body: 'You have successfully subscribed to our Notification service!',
@@ -44,13 +44,31 @@ function displayConfrimNotification(){
     }
 }
 
+function configurePushSub(){
+    if (!('serviceWorker' in navigator)) {
+        return;
+    }
+
+    navigator.serviceWorker.ready
+    .then(function(swreg){
+        return swreg.pushManager.getSubscription();
+    }).then(function(sub){
+        if(sub === null){
+ 
+        }else{
+
+        }
+    });
+}
+
 function askForNotificationPermission(){
     Notification.requestPermission(function(result){
         console.log('User Choice', result);
         if(result !== 'granted'){
             console.log('No notification permission granted!');
         } else {
-            displayConfrimNotification();
+            // displayConfirmNotification();
+            configurePushSub();
         }
     });
 }
