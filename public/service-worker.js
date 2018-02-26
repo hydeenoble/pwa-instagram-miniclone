@@ -1,6 +1,71 @@
 importScripts('workbox-sw.prod.v2.1.2.js');
+importScripts('./src/js/idb.js');
+importScripts('./src/js/utility.js');
 
 const workboxSW = new self.WorkboxSW();
+
+workboxSW.router.registerRoute(/.*(?:googleapis|gstatic)\.com.*$/,
+    workboxSW.strategies.staleWhileRevalidate({
+        cacheName: 'google-fonts',
+        cacheExpiration:{
+            maxEntries: 3,
+            maxAgeSeconds: 60 * 60 * 24 * 30
+        }
+    }));
+
+workboxSW.router.registerRoute('https://cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.3.0/material.indigo-pink.min.css',
+    workboxSW.strategies.staleWhileRevalidate({
+        cacheName: 'material-css'
+    }));
+
+workboxSW.router.registerRoute(/.*(?:firebasestorage\.googleapis|gstatic)\.com.*$/,
+    workboxSW.strategies.staleWhileRevalidate({
+        cacheName: 'post-images'
+    }));
+
+workboxSW.router.registerRoute('https://pwagram-e0ce6.firebaseio.com/posts.json', function (args) {
+    return fetch(args.event.request)
+        .then(function(res){
+            var clonedRes = res.clone();
+            clearAllData('posts')
+                .then(function(){
+                    return clonedRes.json()
+                })
+                .then(function(data){
+                    for (var key in data) {
+                        writeData('posts', data[key]);
+                    }
+                });
+            return res;
+        })
+});
+
+workboxSW.router.registerRoute(function (routeData) {
+    return (routeData.event.request.headers.get('accept').includes('text/html'));
+}, function (args) {
+    return caches.match(args.event.request)
+        .then(function(response){
+        if(response){
+            return response;
+        }else{
+            return fetch(args.event.request)
+                .then(function(res){
+                    return caches.open('dynamic')
+                        .then(function(cache){
+                            // trimCache(CACHE_DYNAMIC_NAME, 3);
+                            cache.put(args.event.request.url, res.clone());
+                            return res;
+                        });
+                }).catch(function(err){
+                    return caches.match('/offline.html')
+                        .then(function(res){
+                            return res;
+                        });
+                });
+        }
+    })
+});
+
 workboxSW.precache([
   {
     "url": "404.html",
@@ -23,6 +88,10 @@ workboxSW.precache([
     "revision": "0eaafd680998c59a7d35278e317d78f3"
   },
   {
+    "url": "service-worker.js",
+    "revision": "5be6972dbcb492ee5f73270f25012ef1"
+  },
+  {
     "url": "src/css/app.css",
     "revision": "f27b4d5a6a99f7b6ed6d06f6583b73fa"
   },
@@ -36,7 +105,7 @@ workboxSW.precache([
   },
   {
     "url": "src/js/app.js",
-    "revision": "325ea86fe2ac3e936a448916d32d3478"
+    "revision": "af27846e89b738b4e56f6c4282362551"
   },
   {
     "url": "src/js/feed.js",
@@ -64,11 +133,11 @@ workboxSW.precache([
   },
   {
     "url": "sw-base.js",
-    "revision": "a1b251bd717dd50efffe82bc42039dde"
+    "revision": "669f01547f053d14f206eace44c1b49b"
   },
   {
     "url": "sw.js",
-    "revision": "2fc0e22908bf7f960479dbfafbaf4107"
+    "revision": "1435c7736de23082894a4403a68c620b"
   },
   {
     "url": "workbox-sw.prod.v2.1.2.js",

@@ -102,7 +102,7 @@ self.addEventListener('fetch', function(event){
 				}else{
 					return fetch(event.request)
 					.then(function(res){
-						caches.open(CACHE_DYNAMIC_NAME)
+						return caches.open(CACHE_DYNAMIC_NAME)
 						.then(function(cache){
 							// trimCache(CACHE_DYNAMIC_NAME, 3);
 							cache.put(event.request.url, res.clone());
@@ -130,9 +130,7 @@ self.addEventListener('sync', function(event){
 		event.waitUntil(
 			readAllData('sync-posts')
 			.then(function(data){
-				console.log("here");
 				for (var dt of data){
-                    console.log("here 1");
 					var postData = new FormData();
 					postData.append('id', dt.id);
 					postData.append('title', dt.title);
@@ -141,7 +139,7 @@ self.addEventListener('sync', function(event){
 					postData.append('rawLocationLat', dt.rawLocation.lat);
   					postData.append('rawLocationLng', dt.rawLocation.lng);
 
-                        fetch('https://us-central1-pwagram-e0ce6.cloudfunctions.net/storePostData', {
+  					fetch('https://us-central1-pwagram-e0ce6.cloudfunctions.net/storePostData', {
 						method: 'POST',
 						body: postData
 					})
