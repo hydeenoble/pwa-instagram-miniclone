@@ -130,8 +130,9 @@ self.addEventListener('sync', function(event){
 		event.waitUntil(
 			readAllData('sync-posts')
 			.then(function(data){
+				console.log("here");
 				for (var dt of data){
-					
+                    console.log("here 1");
 					var postData = new FormData();
 					postData.append('id', dt.id);
 					postData.append('title', dt.title);
@@ -140,20 +141,22 @@ self.addEventListener('sync', function(event){
 					postData.append('rawLocationLat', dt.rawLocation.lat);
   					postData.append('rawLocationLng', dt.rawLocation.lng);
 
-					fetch('https://us-central1-pwagram-e0ce6.cloudfunctions.net/storePostData', {
-					method: 'POST',
-					body: postData
-				  }).then(function(res){
-					console.log('Sent data', res);
-					if (res.ok){
-						res.json()
-						.then(function(resData){
-							deleteSingleItem('sync-posts', resData.id);
+                        fetch('https://us-central1-pwagram-e0ce6.cloudfunctions.net/storePostData', {
+						method: 'POST',
+						body: postData
+					})
+						.then(function(res){
+							console.log('Sent data', res);
+							if (res.ok){
+								res.json()
+								.then(function(resData){
+									deleteSingleItem('sync-posts', resData.id);
+								})
+							}
 						})
-					}
-				  }).catch(function(err){
-					  console.log('Error while sending data', err);
-				  });
+						.catch(function(err){
+					  		console.log('Error while sending data', err);
+				  		});
 				}
 			})
 		);

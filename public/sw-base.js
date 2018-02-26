@@ -1,4 +1,6 @@
 importScripts('workbox-sw.prod.v2.1.2.js');
+importScripts('./src/js/idb.js');
+importScripts('./src/js/utility.js');
 
 const workboxSW = new self.WorkboxSW();
 
@@ -20,5 +22,22 @@ workboxSW.router.registerRoute(/.*(?:firebasestorage\.googleapis|gstatic)\.com.*
     workboxSW.strategies.staleWhileRevalidate({
         cacheName: 'post-images'
     }));
+
+workboxSW.router.registerRoute('https://pwagram-e0ce6.firebaseio.com/posts.json', function (args) {
+    return fetch(args.event.request)
+        .then(function(res){
+            var clonedRes = res.clone();
+            clearAllData('posts')
+                .then(function(){
+                    return clonedRes.json()
+                })
+                .then(function(data){
+                    for (var key in data) {
+                        writeData('posts', data[key]);
+                    }
+                });
+            return res;
+        })
+});
 
 workboxSW.precache([]);
