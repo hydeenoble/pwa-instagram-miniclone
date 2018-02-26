@@ -121,7 +121,7 @@ imagePicker.addEventListener('change', function(event) {
 function openCreatePostModal() {
   
   createPostArea.style.display = 'block';
-  setTimeout(() => {
+  setTimeout(function() {
     createPostArea.style.transform = 'translateY(0)';
   }, 1);
 
@@ -160,7 +160,7 @@ function closeCreatePostModal() {
     });
   }
   
- setTimeout(() => {
+ setTimeout(function() {
     createPostArea.style.transform = 'translateY(100vh)';
   }, 1);
 }
